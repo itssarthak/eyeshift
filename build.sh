@@ -1,7 +1,7 @@
 #!/bin/sh
 # Builds Eyeshift.app and installs it to ~/Applications.
-# Ad-hoc signed: macOS forgets the Accessibility grant on every rebuild, so re-tick it in
-# System Settings → Privacy & Security → Accessibility after building.
+# Signs with the "Eyeshift Local Signing" certificate if you've run scripts/make-signing-cert.sh, so macOS keeps
+# the Accessibility permission across rebuilds. Otherwise ad-hoc signs, and you re-tick Accessibility after each build.
 set -e
 cd "$(dirname "$0")"
 swift build -c release
@@ -11,5 +11,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
 cp .build/release/Eyeshift "$APP/Contents/MacOS/"
 cp Info.plist "$APP/Contents/"
-codesign --force --sign - "$APP"
+ID=-
+security find-certificate -c "Eyeshift Local Signing" >/dev/null 2>&1 && ID="Eyeshift Local Signing"
+codesign --force --sign "$ID" "$APP"
 echo "$APP"

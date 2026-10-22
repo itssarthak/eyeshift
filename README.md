@@ -42,9 +42,10 @@ On first launch the welcome guide walks you through:
    red dot (eyes only), blue dot (point your nose), green dot (keep looking while moving your head),
    then one look at your keyboard.
 
-> The build is ad-hoc signed, so macOS forgets the Accessibility permission each time you rebuild.
-> If Eyeshift keeps asking even though it's ticked: remove it from the Accessibility list with **–**,
-> add it again with **+**, and relaunch.
+> **Rebuilding often?** Run `scripts/make-signing-cert.sh` once. It creates a local signing certificate so macOS
+> keeps the Accessibility permission across rebuilds. Without it, builds are ad-hoc signed and macOS forgets the
+> permission each time: if Eyeshift keeps asking even though it's ticked, remove it from the Accessibility list
+> with **–**, add it again with **+**, and relaunch.
 
 ## Using it
 
