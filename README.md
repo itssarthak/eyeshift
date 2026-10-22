@@ -1,4 +1,6 @@
-# Eyeshift
+<p align="center"><img src="assets/icon-256.png" width="128" alt="Eyeshift icon"></p>
+
+<h1 align="center">Eyeshift</h1>
 
 **Keyboard focus follows your eyes.** Eyeshift is a macOS menu-bar app that watches your webcam and moves
 keyboard focus to the screen, window or split pane you're looking at — so you can just start typing,

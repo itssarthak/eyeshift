@@ -8,7 +8,8 @@ swift build -c release
 APP="$HOME/Applications/Eyeshift.app"
 pkill -x Eyeshift 2>/dev/null || true
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 cp .build/release/Eyeshift "$APP/Contents/MacOS/"
 cp Info.plist "$APP/Contents/"
 ID=-
