@@ -117,6 +117,7 @@ struct GazeModel: Codable {
     var poseStd: [Double]? = nil     // spread of the first 8 raw features, to measure "similar situation"
 
     static let perSituation = 3, maxLearned = 1500
+    static let nudgePrior = 3.0
 
     /// Face width shrinks as you sit back; dividing by it makes the same head turn count for more at a distance.
     static func headFeatures(_ r: [Double]) -> [Double] {
@@ -153,7 +154,9 @@ struct GazeModel: Codable {
             let w = exp(-d2 / 2) * (s.w ?? 1)
             sw += w; sx += w * rx; sy += w * ry
         }
-        return CGPoint(x: sx / (sw + 1), y: sy / (sw + 1))   // the +1 is a prior pulling toward "no correction"
+        // the prior pulls toward "no correction": one click (weight 1) right here nudges ~25% of the way,
+        // a correction (weight 3) ~50%, and repeated clicks keep nudging until it lines up
+        return CGPoint(x: sx / (sw + Self.nudgePrior), y: sy / (sw + Self.nudgePrior))
     }
 
     /// Situation = how you sit (face left/centre/right, up/middle/down, near/normal/far) × where you looked (screen, 4×3 cell).
@@ -172,6 +175,11 @@ struct GazeModel: Codable {
     func remembering(_ s: Sample) -> GazeModel {
         var m = self, s = s
         s.key = situation(s)
+        // residual against the current linear model, so the sample nudges predictions immediately
+        // instead of waiting for the next refit
+        let p = full.predict(Self.fullFeatures(s.f))
+        s.rx = s.x - p.x
+        s.ry = s.y - p.y
         var l = learned ?? []
         let same = l.indices.filter { l[$0].key == s.key }
         if same.count >= Self.perSituation { l.remove(at: same[0]) }
@@ -193,7 +201,9 @@ struct GazeModel: Codable {
     /// `lambda` nil = pick regularisation by holding out some calibration points and testing on them.
     static func fit(calib: [Sample], learned: [Sample] = [], keyboard: [Sample] = [], camera: String = "",
                     lambda: Double? = nil, lambdas: (Double, Double)? = nil) -> GazeModel? {
-        let s = calib + learned
+        // everyday samples steer the overall model only gently; local errors are the correction layer's job,
+        // so one posture's quirks don't leak into every other posture
+        let s = calib + learned.map { var x = $0; x.w = (x.w ?? 1) * 0.3; return x }
         let h = s.compactMap { x in x.hx.map { Sample(f: x.f, x: $0, y: x.hy ?? x.y, w: x.w) } }
         guard let head = Regressor.bestFit(h.map { headFeatures($0.f) }, h, lambda: lambdas?.0 ?? lambda),
               let full = Regressor.bestFit(s.map { fullFeatures($0.f) }, s, lambda: lambdas?.1 ?? lambda) else { return nil }
@@ -288,6 +298,18 @@ struct GazeModel: Codable {
         for _ in 0..<50 { mem = mem.remembering(one) }
         precondition(mem.learned?.count == perSituation, "situation memory not capped")
 
+        // every click nudges immediately: one click moves ~25% toward it, a second click further
+        var nudge = m
+        var click = sample(0)
+        click.x += 200
+        let base = m.predict(click.f).x
+        nudge = nudge.remembering(click)
+        let first = nudge.predict(click.f).x - base
+        nudge = nudge.remembering(click)
+        let second = nudge.predict(click.f).x - base
+        precondition(first > 30 && first < 70, "first click should nudge ~25% (50pt of 200): \(first)")
+        precondition(second > first && second < 200, "second click should nudge further: \(second)")
+
         // local correction: when sitting far right (faceX > 0.7) the user's gaze lands 150pt further right than
         // the linear model thinks. After learning from that, predictions in that posture should improve a lot
         // while other postures stay put.
@@ -303,7 +325,7 @@ struct GazeModel: Codable {
         let probes = (0..<30).map { _ in rightSample() }
         let errBefore = probes.map { abs(m.predict($0.f).x - $0.x) }.reduce(0, +)
         let errAfter = probes.map { abs(learnt.predict($0.f).x - $0.x) }.reduce(0, +)
-        precondition(errAfter < errBefore * 0.5, "local correction didn't help: \(errAfter) vs \(errBefore)")
+        precondition(errAfter < errBefore * 0.75, "local correction didn't help: \(errAfter) vs \(errBefore)")
         var left = sample(0)
         left.f[3] = -0.9
         precondition(abs(learnt.predict(left.f).x - m.predict(left.f).x) < 60, "correction leaked into other postures")
