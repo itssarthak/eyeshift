@@ -12,6 +12,8 @@ without clicking first.
   VSCodium, Zed, Sublime Text, Xcode, JetBrains IDEs and Android Studio, focus moves to the pane you look at.
 - **Stays out of your way** — never moves focus while you type, use the mouse, or look down at your keyboard.
 
+<p align="center"><img src="assets/demo.svg" alt="Animated diagram: a gaze dot moves between windows, screens and split panes, and keyboard focus follows it" width="100%"></p>
+
 Everything runs on your Mac. Camera frames are processed in memory with Apple's Vision framework and thrown
 away immediately — nothing is recorded, saved or sent anywhere. No account, no analytics, no network.
 
