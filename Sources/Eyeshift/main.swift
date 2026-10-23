@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var smoothed: CGPoint?
     private var smoothedHead: CGPoint?
     private var gazeFilter = OneEuro(), headFilter = OneEuro()
-    private var recentGaze: [CGPoint] = []
+    private var recentGaze: [CGPoint] = [], recentHead: [CGPoint] = []
     private var faceVisible = false
     private var latest: [(f: [Double], at: Date)?] = [nil, nil]
     private var recentClicks: [Int: [Bool]] = [:]       // per screen: did we predict the clicked screen/spot?
@@ -110,10 +110,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         if let ls = lastSwitch, Date().timeIntervalSince(ls.at) > 5 { settleLastSwitch() }
         guard !paused, !r.isEmpty else { return }
         // averaging the last few estimates calms the jitter the filter lets through
-        recentGaze = Array((recentGaze + [gazeFilter.filter(blend(r) { $0.predict($1) })]).suffix(max(1, UserDefaults.standard.integer(forKey: "smoothing"))))
-        smoothed = CGPoint(x: recentGaze.map(\.x).reduce(0, +) / CGFloat(recentGaze.count),
-                           y: recentGaze.map(\.y).reduce(0, +) / CGFloat(recentGaze.count))
-        smoothedHead = headFilter.filter(blend(r) { $0.predictHead($1) })
+        let n = max(1, UserDefaults.standard.integer(forKey: "smoothing"))
+        recentGaze = Array((recentGaze + [gazeFilter.filter(blend(r) { $0.predict($1) })]).suffix(n))
+        recentHead = Array((recentHead + [headFilter.filter(blend(r) { $0.predictHead($1) })]).suffix(n))
+        smoothed = Self.mean(recentGaze)
+        smoothedHead = Self.mean(recentHead)
         if let dot, let s = smoothed {
             let h = NSScreen.screens.first?.frame.height ?? 0
             dot.setFrameOrigin(NSPoint(x: s.x - 8, y: h - s.y - 8))
@@ -121,6 +122,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         let lines = r.compactMap { x in x.model.keyboardLine.map { ($0, x.weight) } }
         let kb = lines.isEmpty ? nil : lines.map { $0.0 * $0.1 }.reduce(0, +) / lines.map(\.1).reduce(0, +)
         focuser.update(gaze: smoothed!, head: smoothedHead!, keyboardLine: kb)
+    }
+
+    private static func mean(_ p: [CGPoint]) -> CGPoint {
+        CGPoint(x: p.map(\.x).reduce(0, +) / CGFloat(p.count), y: p.map(\.y).reduce(0, +) / CGFloat(p.count))
     }
 
     private typealias Reading = (slot: Int, model: GazeModel, f: [Double], weight: Double)
@@ -314,6 +319,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         gazeFilter = OneEuro()
         headFilter = OneEuro()
         recentGaze = []
+        recentHead = []
         calibration = Calibration(cameras: cameraIDs) { [weak self] result in
             guard let self else { return }
             self.calibration = nil
