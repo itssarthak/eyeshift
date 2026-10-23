@@ -6,7 +6,7 @@ import SwiftUI
 /// Every user setting and its default. Read through UserDefaults everywhere else.
 let settingDefaults: [String: Any] = [
     "switchDelay": 300.0, "headTurn": 50.0, "paneFocus": true, "paneDelay": 300.0, "edgeMargin": 120.0, "clickFallback": true,
-    "waitTyping": true, "typingPause": 2.0, "learnClicks": true, "showDot": false, "camera": "", "camera2": "",
+    "waitTyping": true, "typingPause": 2.0, "learnClicks": true, "showDot": false, "smoothing": 10.0, "camera": "", "camera2": "",
 ]
 
 struct SettingsView: View {
@@ -20,6 +20,7 @@ struct SettingsView: View {
     @AppStorage("typingPause") private var typingPause = 2.0
     @AppStorage("learnClicks") private var learnClicks = true
     @AppStorage("showDot") private var showDot = false
+    @AppStorage("smoothing") private var smoothing = 10.0
     @AppStorage("camera") private var camera = ""
     @AppStorage("camera2") private var camera2 = ""
     @State private var startAtLogin = SMAppService.mainApp.status == .enabled
@@ -32,6 +33,10 @@ struct SettingsView: View {
                        $switchDelay, 100...1000, step: 50, "\(Int(switchDelay)) ms")
                 slider("Head turn needed", "How far you turn your head toward the other screen before it takes over. 50% = halfway between the screens' centres.",
                        $headTurn, 30...80, step: 5, "\(Int(headTurn))%")
+            }
+            Section("Gaze") {
+                slider("Smoothing", "How many recent gaze estimates are averaged. Higher = steadier dot and fewer jittery switches, but it lags a little behind your eyes.",
+                       $smoothing, 1...20, step: 1, "\(Int(smoothing))")
             }
             Section("Windows and panes") {
                 toggle("Focus the window or pane I look at", "Within one screen, move focus to the window — or split pane in supported editors and terminals — you're looking at.",

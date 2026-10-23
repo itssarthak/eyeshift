@@ -109,8 +109,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         defer { refreshStatus() }
         if let ls = lastSwitch, Date().timeIntervalSince(ls.at) > 5 { settleLastSwitch() }
         guard !paused, !r.isEmpty else { return }
-        // average of the last 5 estimates calms the jitter the filter lets through
-        recentGaze = Array((recentGaze + [gazeFilter.filter(blend(r) { $0.predict($1) })]).suffix(5))
+        // averaging the last few estimates calms the jitter the filter lets through
+        recentGaze = Array((recentGaze + [gazeFilter.filter(blend(r) { $0.predict($1) })]).suffix(max(1, UserDefaults.standard.integer(forKey: "smoothing"))))
         smoothed = CGPoint(x: recentGaze.map(\.x).reduce(0, +) / CGFloat(recentGaze.count),
                            y: recentGaze.map(\.y).reduce(0, +) / CGFloat(recentGaze.count))
         smoothedHead = headFilter.filter(blend(r) { $0.predictHead($1) })
