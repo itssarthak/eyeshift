@@ -36,7 +36,7 @@ struct SettingsView: View {
             }
             Section("Gaze") {
                 slider("Smoothing", "How many recent gaze estimates are averaged. Higher = steadier dot and fewer jittery switches, but it lags a little behind your eyes.",
-                       $smoothing, 1...20, step: 1, "\(Int(smoothing))")
+                       $smoothing, 1...30, step: 1, "\(Int(smoothing))")
             }
             Section("Windows and panes") {
                 toggle("Focus the window or pane I look at", "Within one screen, move focus to the window — or split pane in supported editors and terminals — you're looking at.",
