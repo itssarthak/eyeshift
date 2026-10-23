@@ -24,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var smoothed: CGPoint?
     private var smoothedHead: CGPoint?
     private var gazeFilter = OneEuro(), headFilter = OneEuro()
+    private var recentGaze: [CGPoint] = []
     private var faceVisible = false
     private var latest: [(f: [Double], at: Date)?] = [nil, nil]
     private var recentClicks: [Int: [Bool]] = [:]       // per screen: did we predict the clicked screen/spot?
@@ -108,7 +109,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         defer { refreshStatus() }
         if let ls = lastSwitch, Date().timeIntervalSince(ls.at) > 5 { settleLastSwitch() }
         guard !paused, !r.isEmpty else { return }
-        smoothed = gazeFilter.filter(blend(r) { $0.predict($1) })
+        // average of the last 5 estimates calms the jitter the filter lets through
+        recentGaze = Array((recentGaze + [gazeFilter.filter(blend(r) { $0.predict($1) })]).suffix(5))
+        smoothed = CGPoint(x: recentGaze.map(\.x).reduce(0, +) / CGFloat(recentGaze.count),
+                           y: recentGaze.map(\.y).reduce(0, +) / CGFloat(recentGaze.count))
         smoothedHead = headFilter.filter(blend(r) { $0.predictHead($1) })
         if let dot, let s = smoothed {
             let h = NSScreen.screens.first?.frame.height ?? 0
@@ -309,6 +313,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         smoothedHead = nil
         gazeFilter = OneEuro()
         headFilter = OneEuro()
+        recentGaze = []
         calibration = Calibration(cameras: cameraIDs) { [weak self] result in
             guard let self else { return }
             self.calibration = nil
