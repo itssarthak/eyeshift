@@ -37,13 +37,23 @@ window or pane — it is **not** precise enough to point at a word or replace th
 | Free and open source | ✅ MIT | ❌ paid | ❌ | Built in | ✅ |
 | Learns from your clicks and typing | ✅ | — | — | — | — |
 
-## Requirements
+## Install
 
-- macOS 14 Sonoma or later (Apple silicon or Intel)
-- A webcam (built-in is fine). Optionally a second webcam on your other screen for better accuracy there.
-- Xcode or the Xcode Command Line Tools (Swift 5.9+) to build
+With [Homebrew](https://brew.sh):
 
-## Build and run
+```sh
+brew tap chaibreak/tap; brew trust --tap chaibreak/tap; brew install --cask eyeshift && open -a Eyeshift
+```
+
+Or download the latest zip from [Releases](https://github.com/itssarthak/eyeshift/releases/latest), unzip it and move Eyeshift to Applications. It isn't notarized
+yet, so the first time, right-click it and choose **Open**.
+
+Needs macOS 14 Sonoma or later (Apple silicon or Intel) and a webcam (built-in is fine). Optionally add a second
+webcam on your other screen for better accuracy there.
+
+### Build from source
+
+Needs Xcode or the Xcode Command Line Tools (Swift 5.9+).
 
 ```sh
 git clone https://github.com/itssarthak/eyeshift.git

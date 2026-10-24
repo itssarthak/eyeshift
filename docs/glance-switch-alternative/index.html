@@ -133,10 +133,11 @@ footer{margin-top:90px;padding:28px 0 40px;border-top:1px solid var(--line);colo
   </table></div>
 <article>
 <h2>Try it in a minute</h2>
-<pre>git clone https://github.com/itssarthak/eyeshift.git
-cd eyeshift &amp;&amp; ./build.sh
-open ~/Applications/Eyeshift.app</pre>
-<p>Then allow camera and Accessibility access and run the short calibration. <a href="../">More about Eyeshift →</a></p>
+<pre>brew tap chaibreak/tap
+brew trust --tap chaibreak/tap
+brew install --cask eyeshift
+open -a Eyeshift</pre>
+<p>Or <a href="https://github.com/itssarthak/eyeshift/releases/latest">download the zip</a>. Then allow camera and Accessibility access and run the short calibration. <a href="../">More about Eyeshift →</a></p>
 </article>
 <footer>
   <span>Made by <a href="https://sarthakchhabra.com/">Sarthak Chhabra</a></span>
