@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eyeshift: free Glance Switch alternative, keyboard focus follows your eyes on Mac</title>
+<meta name="description" content="Eyeshift is a free, open-source macOS menu bar app that uses your webcam to move keyboard focus to the screen, window or split pane you look at. A free alternative to Glance Switch, no extra hardware.">
+<link rel="canonical" href="https://sarthakchhabra.com/eyeshift/">
+<link rel="icon" href="icon-256.png">
+<meta name="theme-color" content="#0b0a1a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Eyeshift: keyboard focus follows your eyes">
+<meta property="og:description" content="Free, open-source Mac app that switches focus to the screen, window or split pane you look at, using just your webcam.">
+<meta property="og:url" content="https://sarthakchhabra.com/eyeshift/">
+<meta property="og:image" content="https://sarthakchhabra.com/eyeshift/social-preview.png">
+<meta property="og:site_name" content="Sarthak Chhabra">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="Eyeshift logo: keyboard focus follows your eyes">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Eyeshift: keyboard focus follows your eyes">
+<meta name="twitter:description" content="Free, open-source Glance Switch alternative for Mac. Look at a screen, window or split pane and start typing.">
+<meta name="twitter:image" content="https://sarthakchhabra.com/eyeshift/social-preview.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Eyeshift","operatingSystem":"macOS 14+","applicationCategory":"UtilitiesApplication","description":"Menu bar app that moves keyboard focus to the screen, window or split pane you look at, using your webcam.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"downloadUrl":"https://github.com/itssarthak/eyeshift","image":"https://sarthakchhabra.com/eyeshift/social-preview.png","url":"https://sarthakchhabra.com/eyeshift/","softwareVersion":"1.0","isAccessibleForFree":true,"license":"https://opensource.org/licenses/MIT","codeRepository":"https://github.com/itssarthak/eyeshift","keywords":"eye tracking, gaze tracking, focus follows eyes, Glance Switch alternative, multi-monitor, window focus, split pane, macOS, webcam","author":{"@type":"Person","name":"Sarthak Chhabra","url":"https://sarthakchhabra.com/"}}
+</script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is there a free alternative to Glance Switch?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Eyeshift is a free, open-source (MIT) Mac app that does the same job as Glance Switch: it uses your webcam to move keyboard focus to the screen, window or split pane you're looking at."}}, {"@type": "Question", "name": "How do I switch focus between monitors by looking at them on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Install Eyeshift, allow camera and Accessibility access, and run the 45-second calibration. After that, turning toward another monitor moves keyboard focus and the mouse pointer to it automatically."}}, {"@type": "Question", "name": "Does eye-tracking focus switching need a Tobii or special eye tracker?", "acceptedAnswer": {"@type": "Answer", "text": "No. Eyeshift works with the built-in FaceTime camera or any USB webcam. You can add a second webcam on another screen for better accuracy there."}}, {"@type": "Question", "name": "Can it focus split panes in my terminal or editor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Eyeshift moves focus between split panes in iTerm2, Terminal, Ghostty, Warp, kitty, WezTerm, VS Code, Cursor, Windsurf, Zed, Sublime Text, Xcode, JetBrains IDEs and Android Studio."}}, {"@type": "Question", "name": "Will it steal focus while I'm typing?", "acceptedAnswer": {"@type": "Answer", "text": "No. Eyeshift never moves focus while you type, while you're using the mouse, or when you look down at your keyboard."}}, {"@type": "Question", "name": "Is my camera feed private?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Frames are processed in memory on your Mac with Apple's Vision framework and discarded immediately. Nothing is recorded, saved or sent, and Eyeshift has no network access, account or analytics."}}, {"@type": "Question", "name": "How accurate is webcam eye tracking?", "acceptedAnswer": {"@type": "Answer", "text": "Good to about a thumbnail-sized area, which is plenty for picking a screen, window or pane. It is not precise enough to replace the mouse. Eyeshift keeps learning from your clicks and typing, so it gets more accurate over time."}}, {"@type": "Question", "name": "Does Eyeshift work on Windows or Linux?", "acceptedAnswer": {"@type": "Answer", "text": "Not yet. Eyeshift is a native macOS app for macOS 14 Sonoma and later, on Apple silicon and Intel Macs."}}]}
+</script>
+<style>
+:root{--bg:#0b0a1a;--panel:#14132b;--line:#26244a;--fg:#f1f0fb;--muted:#a9a7c6;--indigo:#6366f1;--indigo-2:#4f46e5;--cyan:#22d3ee;--code:#0f0e22}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(900px 500px at 15% -10%,rgba(99,102,241,.28),transparent 60%),radial-gradient(700px 400px at 95% 10%,rgba(34,211,238,.16),transparent 60%)}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--fg);font-size:18px}
+.brand img{width:32px;height:32px;border-radius:8px}
+nav .links{display:flex;gap:20px;font-size:15px}
+nav .links a{color:var(--muted)}
+.faq{max-width:760px;margin:0 auto;display:grid;gap:10px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--cyan);font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:10px 0 0;color:var(--muted)}
+.hero{text-align:center;padding:56px 0 24px}
+.pill{display:inline-block;padding:5px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(99,102,241,.12);color:#c7c8ff;font-size:14px}
+h1{font-size:clamp(2.4rem,7vw,4.4rem);line-height:1.03;letter-spacing:-.03em;margin:20px 0 18px;font-weight:800}
+h1 .grad{background:linear-gradient(90deg,#818cf8,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{max-width:640px;margin:0 auto;color:var(--muted);font-size:clamp(1.05rem,2.2vw,1.22rem)}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:32px 0 10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:12px;font-weight:600;font-size:16px}
+.btn:hover{text-decoration:none}
+.btn.primary{background:linear-gradient(135deg,var(--indigo),var(--indigo-2));color:#fff;box-shadow:0 8px 30px rgba(79,70,229,.45)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{border:1px solid var(--line);color:var(--fg);background:rgba(255,255,255,.03)}
+.btn.ghost:hover{border-color:#3d3a6e}
+.small{color:var(--muted);font-size:14px}
+.demo{margin:44px auto 0;max-width:980px;padding:10px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.demo img{display:block;width:100%;height:auto;border-radius:12px}
+section{padding:80px 0 0}
+h2{font-size:clamp(1.7rem,4vw,2.4rem);letter-spacing:-.02em;margin:0 0 10px;text-align:center}
+.sub{text-align:center;color:var(--muted);margin:0 auto 36px;max-width:620px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.card .ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(99,102,241,.16);color:#a5b4fc;margin-bottom:14px}
+.card .ic svg{width:22px;height:22px}
+.card h3{margin:0 0 6px;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:15.5px}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.step{position:relative;padding:22px 22px 22px 70px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:22px;top:22px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:linear-gradient(135deg,var(--indigo),var(--cyan));color:#fff}
+.step h3{margin:0 0 4px;font-size:17px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:640px}
+th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-weight:600;color:var(--muted)}
+th.us,td.us{background:rgba(99,102,241,.1);color:var(--fg)}
+th.us{color:#c7c8ff}
+.yes,td.us.yes{color:#4ade80;font-weight:600}.no{color:#f87171}
+.privacy{display:flex;gap:24px;align-items:center;padding:28px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(99,102,241,.14),rgba(34,211,238,.06))}
+.privacy svg{flex:none;width:56px;height:56px;color:var(--cyan)}
+.privacy h3{margin:0 0 6px;font-size:20px}
+.privacy p{margin:0;color:var(--muted)}
+pre{margin:0;background:var(--code);border:1px solid var(--line);padding:20px;border-radius:14px;overflow-x:auto;font:14.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d6d4f0}
+pre .c{color:#6f6c96}
+.install{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center}
+.install p{color:var(--muted);margin:0 0 10px}
+footer{margin-top:90px;padding:28px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+@media (max-width:720px){
+  nav .links{display:none}
+  .install{grid-template-columns:1fr}
+  .privacy{flex-direction:column;align-items:flex-start}
+  section{padding-top:64px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="./"><img src="icon-256.png" width="32" height="32" alt="">Eyeshift</a>
+  <div class="links"><a href="#features">Features</a><a href="#compare">Compare</a><a href="#install">Install</a><a href="#faq">FAQ</a><a href="https://github.com/itssarthak/eyeshift">GitHub</a></div>
+</nav>
+
+<header class="hero">
+  <span class="pill">Free &amp; open source · macOS 14+</span>
+  <h1>Keyboard focus<br><span class="grad">follows your eyes.</span></h1>
+  <p class="lead">Look at another screen, window or split pane and start typing. Eyeshift uses the webcam you already have to move focus there. No clicking, no extra hardware.</p>
+  <div class="cta">
+    <a class="btn primary" href="#install">Get Eyeshift, free</a>
+    <a class="btn ghost" href="https://github.com/itssarthak/eyeshift"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>View on GitHub</a>
+  </div>
+  <p class="small">A free <a href="glance-switch-alternative/">alternative to Glance Switch</a> · MIT licence</p>
+  <div class="demo"><img src="demo.svg" width="960" height="420" alt="Animated diagram: a gaze dot moves between windows, screens and split panes, and keyboard focus follows it"></div>
+</header>
+
+<section>
+  <h2>Built for too many windows and monitors</h2>
+  <p class="sub">I kept typing into the wrong Claude window with several open side by side. Now whichever one I'm looking at is the one that gets my keystrokes.</p>
+</section>
+
+<section id="features">
+  <h2>Eye-tracking focus switching for Mac</h2>
+  <p class="sub">Everything you'd expect from a gaze focus switcher, and it keeps getting better the more you use it.</p>
+  <div class="grid">
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="9" height="12" rx="1.5"/><rect x="13" y="4" width="9" height="12" rx="1.5"/><path d="M6 20h2M16 20h2"/></svg></div><h3>Screens</h3><p>Turn toward another monitor and focus, and the pointer, move there.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="13" height="11" rx="1.5"/><rect x="8" y="10" width="13" height="11" rx="1.5"/></svg></div><h3>Windows</h3><p>Look at another window on the same screen and it comes forward, ready for typing.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M12 4v16M12 12h9"/></svg></div><h3>Split panes</h3><p>iTerm2, Terminal, Ghostty, VS Code, Cursor, Zed, Xcode, JetBrains IDEs and more.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 11h.01M10 11h.01M14 11h.01M18 11h.01M8 14h8"/></svg></div><h3>Stays out of your way</h3><p>Never moves focus while you type, use the mouse, or glance down at your keyboard.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><h3>Learns as you work</h3><p>Every click and keystroke teaches it where you were looking. Wrong switch? Click where you meant and it nudges itself.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Any webcam, or two</h3><p>The built-in camera is enough. Add a second webcam on your other screen for extra accuracy there.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="privacy">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 9.5-8 11-4.5-1.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <div><h3>Your camera never leaves your Mac</h3><p>Frames are processed in memory with Apple's Vision framework and thrown away immediately. Nothing is recorded, saved or sent anywhere. No account, no analytics, no network.</p></div>
+  </div>
+</section>
+
+<section id="compare">
+  <h2>How it compares</h2>
+  <p class="sub">The only free, open-source option that switches screens, windows and split panes with a plain webcam.</p>
+  <div class="table"><table>
+    <thead><tr><th></th><th class="us">Eyeshift</th><th>Glance Switch</th><th>Tobii eye trackers</th><th>macOS Head Pointer</th><th>AutoRaise</th></tr></thead>
+    <tbody>
+      <tr><td>Moves keyboard focus where you look</td><td class="us yes">Yes</td><td class="yes">Yes</td><td>Needs extra software</td><td class="no">Moves the pointer</td><td class="no">Follows the mouse</td></tr>
+      <tr><td>Screens, windows and split panes</td><td class="us yes">Yes</td><td class="yes">Yes</td><td>—</td><td>—</td><td>Windows only</td></tr>
+      <tr><td>Works with a normal webcam</td><td class="us yes">Yes</td><td class="yes">Yes</td><td class="no">Dedicated hardware</td><td class="yes">Yes</td><td>n/a</td></tr>
+      <tr><td>Free and open source</td><td class="us yes">Yes, MIT</td><td class="no">Paid</td><td class="no">No</td><td>Built in</td><td class="yes">Yes</td></tr>
+      <tr><td>Learns from your clicks and typing</td><td class="us yes">Yes</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="install">
+  <h2>Get started</h2>
+  <p class="sub">Build it from source in under a minute, then a short calibration and you're set.</p>
+  <div class="install">
+<pre><span class="c"># needs macOS 14+ and Xcode Command Line Tools</span>
+git clone https://github.com/itssarthak/eyeshift.git
+cd eyeshift &amp;&amp; ./build.sh
+open ~/Applications/Eyeshift.app</pre>
+    <div class="steps" style="grid-template-columns:1fr">
+      <div class="step"><h3>Allow camera and Accessibility</h3><p>The welcome guide walks you through both.</p></div>
+      <div class="step"><h3>Calibrate</h3><p>About 45 seconds per screen: follow a few dots.</p></div>
+      <div class="step"><h3>Just look and type</h3><p>⇧⌘G pauses any time.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>Questions</h2>
+  <p class="sub">Everything people ask before switching focus with their eyes.</p>
+  <div class="faq">
+<details><summary>Is there a free alternative to Glance Switch?</summary><p>Yes. Eyeshift is a free, open-source (MIT) Mac app that does the same job as Glance Switch: it uses your webcam to move keyboard focus to the screen, window or split pane you&#x27;re looking at.</p></details>
+<details><summary>How do I switch focus between monitors by looking at them on a Mac?</summary><p>Install Eyeshift, allow camera and Accessibility access, and run the 45-second calibration. After that, turning toward another monitor moves keyboard focus and the mouse pointer to it automatically.</p></details>
+<details><summary>Does eye-tracking focus switching need a Tobii or special eye tracker?</summary><p>No. Eyeshift works with the built-in FaceTime camera or any USB webcam. You can add a second webcam on another screen for better accuracy there.</p></details>
+<details><summary>Can it focus split panes in my terminal or editor?</summary><p>Yes. Eyeshift moves focus between split panes in iTerm2, Terminal, Ghostty, Warp, kitty, WezTerm, VS Code, Cursor, Windsurf, Zed, Sublime Text, Xcode, JetBrains IDEs and Android Studio.</p></details>
+<details><summary>Will it steal focus while I&#x27;m typing?</summary><p>No. Eyeshift never moves focus while you type, while you&#x27;re using the mouse, or when you look down at your keyboard.</p></details>
+<details><summary>Is my camera feed private?</summary><p>Yes. Frames are processed in memory on your Mac with Apple&#x27;s Vision framework and discarded immediately. Nothing is recorded, saved or sent, and Eyeshift has no network access, account or analytics.</p></details>
+<details><summary>How accurate is webcam eye tracking?</summary><p>Good to about a thumbnail-sized area, which is plenty for picking a screen, window or pane. It is not precise enough to replace the mouse. Eyeshift keeps learning from your clicks and typing, so it gets more accurate over time.</p></details>
+<details><summary>Does Eyeshift work on Windows or Linux?</summary><p>Not yet. Eyeshift is a native macOS app for macOS 14 Sonoma and later, on Apple silicon and Intel Macs.</p></details>
+  </div>
+</section>
+
+<footer>
+  <span>Made by <a href="https://sarthakchhabra.com/">Sarthak Chhabra</a></span>
+  <span><a href="glance-switch-alternative/">Glance Switch alternative</a> · <a href="https://github.com/itssarthak/eyeshift">GitHub</a> · <a href="https://github.com/itssarthak/eyeshift/issues">Report an issue</a> · MIT licence</span>
+</footer>
+</div>
+</body>
+</html>

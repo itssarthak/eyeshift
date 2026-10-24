@@ -2,6 +2,8 @@
 
 <h1 align="center">Eyeshift</h1>
 
+<p align="center"><a href="https://sarthakchhabra.com/eyeshift/">Website</a> · <a href="https://sarthakchhabra.com/eyeshift/glance-switch-alternative/">Free Glance Switch alternative</a></p>
+
 **Keyboard focus follows your eyes.** Eyeshift is a macOS menu-bar app that watches your webcam and moves
 keyboard focus to the screen, window or split pane you're looking at — so you can just start typing,
 without clicking first.
