@@ -14,6 +14,9 @@ without clicking first.
 
 <p align="center"><img src="assets/demo.svg" alt="Animated diagram: a gaze dot moves between windows, screens and split panes, and keyboard focus follows it" width="100%"></p>
 
+**A free, open-source alternative to [Glance Switch](https://glanceswitch.com/)** for Mac — and like it, it needs no
+special hardware: just the webcam you already have.
+
 Everything runs on your Mac. Camera frames are processed in memory with Apple's Vision framework and thrown
 away immediately — nothing is recorded, saved or sent anywhere. No account, no analytics, no network.
 
@@ -21,6 +24,16 @@ away immediately — nothing is recorded, saved or sent anywhere. No account, no
 
 Webcam eye tracking is good to roughly a thumbnail-sized area on screen. That's plenty for picking a screen,
 window or pane — it is **not** precise enough to point at a word or replace the mouse.
+
+## How it compares
+
+| | Eyeshift | Glance Switch | Tobii eye trackers | macOS Head Pointer | AutoRaise / focus-follows-mouse |
+|---|---|---|---|---|---|
+| Moves keyboard focus by where you look | ✅ | ✅ | Needs extra software | ❌ moves the pointer | ❌ follows the mouse |
+| Screens, windows **and split panes** | ✅ | ✅ | — | — | Windows only |
+| Works with a normal webcam | ✅ | ✅ | ❌ dedicated hardware | ✅ | n/a |
+| Free and open source | ✅ MIT | ❌ paid | ❌ | Built in | ✅ |
+| Learns from your clicks and typing | ✅ | — | — | — | — |
 
 ## Requirements
 
