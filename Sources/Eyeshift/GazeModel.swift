@@ -53,7 +53,21 @@ struct Regressor: Codable {
                 for j in 0..<k { a[i][j] += wz * z[j] }
             }
         }
-        for i in 1..<k { a[i][i] += lambda }
+        for i in 1..<k {
+            // Differential regularisation:
+            // - In the 8-feature head (screen-choice) model, heavily damp posture features (roll, faceX, faceY, faceW
+            //   at indices 3...6) so turning the head (yaw/pitch) switches screens immediately even before torso/neck posture shifts.
+            // - In the full model, heavily damp the 144 noisy eye-patch pixel features so sensor noise never causes drift.
+            let isPostureInHead = d == 8 && (3...6).contains(i) && lambda > 0.05
+            let isPixel = i > GazeModel.geomCount && lambda > 0.05
+            if isPostureInHead {
+                a[i][i] += max(lambda * 10, 300.0)
+            } else if isPixel {
+                a[i][i] += max(lambda * 25, 120.0)
+            } else {
+                a[i][i] += lambda
+            }
+        }
         guard let wx = solve(a, bx), let wy = solve(a, by) else { return nil }
         r.wx = wx
         r.wy = wy
@@ -65,7 +79,13 @@ struct Regressor: Codable {
     static func bestFit(_ xs: [[Double]], _ ys: [Sample], lambda: Double?) -> Regressor? {
         if let lambda { return fit(xs, ys, lambda: lambda) }
         var dots: [String: Int] = [:]
-        let group = ys.map { s in dots["\(Int(s.x)),\(Int(s.y))", default: dots.count] }
+        let group = ys.map { s -> Int in
+            let k = "\(Int(s.x)),\(Int(s.y))"
+            if let g = dots[k] { return g }
+            let g = dots.count
+            dots[k] = g
+            return g
+        }
         let test = Set(group.indices.filter { group[$0] % 4 == 0 }), train = group.indices.filter { !test.contains($0) }
         guard test.count >= 5, train.count >= 20 else { return fit(xs, ys, lambda: 3) }
         let best = [0.3, 3, 30, 300].min { a, b in
@@ -118,6 +138,7 @@ struct GazeModel: Codable {
 
     static let perSituation = 3, maxLearned = 1500
     static let nudgePrior = 3.0
+    static let geomCount = 17
 
     /// Face width shrinks as you sit back; dividing by it makes the same head turn count for more at a distance.
     static func headFeatures(_ r: [Double]) -> [Double] {
@@ -127,7 +148,12 @@ struct GazeModel: Codable {
 
     static func fullFeatures(_ r: [Double]) -> [Double] {
         let w = max(r[5], 0.05)
-        return headFeatures(r) + [r[6], r[7], (r[6] - 0.5) / w, (r[7] - 0.5) / w] + r[8...]
+        let px = r[6] - 0.5, py = r[7] - 0.5
+        let geom = headFeatures(r) + [
+            r[6], r[7], px / w, py / w,
+            r[0] * px, r[1] * py, r[0] * py, r[1] * px, r[0] * r[0]
+        ]
+        return geom + r[8...]
     }
 
     func predictHead(_ f: [Double]) -> CGPoint { head.predict(Self.headFeatures(f)) }

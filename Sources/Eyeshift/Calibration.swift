@@ -12,7 +12,7 @@ final class Calibration {
     private var views: [DotView] = []
     private var windows: [NSWindow] = []
     private var samples: [[Sample]]    // per camera
-    private let cameras: [String?]       // uniqueID per camera slot, nil = slot off
+    private var cameras: [String?]       // uniqueID per camera slot, updated as frames arrive
     private var b = 0, i = 0
     private var target: (step: Step, center: CGPoint)?   // set while sampling
     private var waitingForSpace = true
@@ -86,7 +86,8 @@ final class Calibration {
         prompt(done: nil)
     }
 
-    func add(_ f: [Double], camera i: Int) {
+    func add(_ f: [Double], camera i: Int, id: String) {
+        if !id.isEmpty { cameras[i] = id }
         if let (step, center) = target {
             // the head model learns where the head points: the screen centre while only the eyes move,
             // the dot itself when the nose points at it, and nothing while the head is deliberately wandering

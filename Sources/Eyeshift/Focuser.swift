@@ -29,9 +29,10 @@ final class Focuser {
     private let defaults = UserDefaults.standard
 
     // MARK: tunables (user-facing ones live in Settings)
-    private let mouseHold = 1.5        // no focus moves this long after mouse/trackpad use
-    private let screenTypingPause = 0.6  // screens may switch this soon after typing; panes wait the full typing pause
-    private let hysteresis = 0.05      // going back across a boundary needs this much extra turn
+    private let mouseHold = 0.7        // no pane/window focus moves this long after mouse/trackpad use
+    private let screenMouseHold = 0.2  // screen switches only pause briefly during active mouse drag/move (ignoring scroll momentum)
+    private let screenTypingPause = 0.4  // screens may switch this soon after typing; panes wait the full typing pause
+    private let hysteresis = 0.08      // going back across a boundary needs this much extra turn
     private let offScreen = 0.2        // further than this (fraction of width) from every screen = looking away
 
     static func screensCG() -> [CGRect] {
@@ -52,10 +53,10 @@ final class Focuser {
 
         let keyAgo = CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: .keyDown)
         let waitTyping = defaults.bool(forKey: "waitTyping")
-        guard !mouseBusy(), Date().timeIntervalSince(lastAction) > 0.5, let s = facing else { candidate = nil; return }
+        guard Date().timeIntervalSince(lastAction) > 0.2, let s = facing else { candidate = nil; return }
 
         if s != current {
-            guard !waitTyping || keyAgo > screenTypingPause else { candidate = nil; return }
+            guard !screenMouseBusy(), !waitTyping || keyAgo > screenTypingPause else { candidate = nil; return }
             let delay = defaults.double(forKey: "switchDelay") / 1000
             if let w = lastWindowOnScreen[s], let f = frame(w.el), screens[s].contains(CGPoint(x: f.midX, y: f.midY)) {
                 act("screen:\(s)", delay, f) { self.focus(w, pointerTo: CGPoint(x: f.midX, y: f.midY)) }
@@ -65,7 +66,7 @@ final class Focuser {
             return
         }
 
-        guard defaults.bool(forKey: "paneFocus"), !waitTyping || keyAgo > defaults.double(forKey: "typingPause") else { candidate = nil; return }
+        guard !mouseBusy(), defaults.bool(forKey: "paneFocus"), !waitTyping || keyAgo > defaults.double(forKey: "typingPause") else { candidate = nil; return }
         let delay = defaults.double(forKey: "paneDelay") / 1000
         let margin = defaults.double(forKey: "edgeMargin")
 
@@ -133,6 +134,13 @@ final class Focuser {
 
     // MARK: user activity
 
+    private func screenMouseBusy() -> Bool {
+        if NSEvent.pressedMouseButtons != 0 { return true }
+        let mouse = [CGEventType.mouseMoved, .leftMouseDown, .rightMouseDown, .otherMouseDown, .leftMouseDragged]
+            .map { CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: $0) }.min() ?? .infinity
+        return mouse < screenMouseHold && Date().timeIntervalSince(lastOwnClick) > mouse + 0.2
+    }
+
     private func mouseBusy() -> Bool {
         let mouse = [CGEventType.mouseMoved, .leftMouseDown, .rightMouseDown, .otherMouseDown, .leftMouseDragged, .scrollWheel]
             .map { CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: $0) }.min() ?? .infinity
@@ -170,7 +178,10 @@ final class Focuser {
         AXUIElementSetAttributeValue(w.el, kAXMainAttribute as CFString, kCFBooleanTrue)
         AXUIElementPerformAction(w.el, kAXRaiseAction as CFString)
         NSRunningApplication(processIdentifier: w.pid)?.activate()
-        if let p = pointerTo { CGWarpMouseCursorPosition(p) }
+        if let p = pointerTo {
+            lastOwnClick = Date()
+            CGWarpMouseCursorPosition(p)
+        }
     }
 
     // MARK: panes

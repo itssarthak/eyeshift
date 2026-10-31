@@ -5,8 +5,8 @@ import SwiftUI
 
 /// Every user setting and its default. Read through UserDefaults everywhere else.
 let settingDefaults: [String: Any] = [
-    "switchDelay": 300.0, "headTurn": 50.0, "paneFocus": true, "paneDelay": 300.0, "edgeMargin": 120.0, "clickFallback": true,
-    "waitTyping": true, "typingPause": 2.0, "learnClicks": true, "showDot": false, "smoothing": 10.0, "camera": "", "camera2": "",
+    "switchDelay": 200.0, "headTurn": 50.0, "paneFocus": true, "paneDelay": 220.0, "edgeMargin": 120.0, "clickFallback": true,
+    "waitTyping": true, "typingPause": 2.0, "learnClicks": true, "showDot": false, "smoothing": 3.0, "camera": "", "camera2": "",
 ]
 
 struct SettingsView: View {
